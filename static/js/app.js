@@ -81,9 +81,7 @@ dataSamples.then(function(data) {
         //key = id
         //value = [[otu_ids], [sample_values]]
         top_10_dict[dropdown_ids[i]] = [top_10_OTUs_ids[i], top_10_OTUs_vals[i]];
-
         all_dict[dropdown_ids[i]] = [OTUs_ids[i], OTUs_vals[i]];
-
     };
 
     //----------------------------------------------------------------------------
@@ -131,11 +129,46 @@ dataSamples.then(function(data) {
     Plotly.newPlot("bubble", bubble_data);
 
     //----------------------------------------------------------------------------
-    //----- Update Plot -----
+    //----- Sample Metadata -----
     //----------------------------------------------------------------------------
     
-    //when new dropdown menu value is selected, run updatePlotly()
-    d3.select("#selDataset").on("change", updatePlotly);
+    let metadata = data.metadata;
+    let sample_metadata = metadata[0];
+
+    let metadata_keys = Object.keys(sample_metadata);
+    let metadata_values = Object.values(sample_metadata);
+
+    let metadata_text = "";
+    for (let i = 0; i < metadata_keys.length; i++) {
+
+        let key_value_text = `${metadata_keys[i]}: ${metadata_values[i]} <br>`;
+        metadata_text = metadata_text.concat(key_value_text);
+    }
+    
+    let select_sample_metadata =  d3.select("#sample-metadata");
+    select_sample_metadata.html(metadata_text);
+    //////////https://stackoverflow.com/questions/70926924/can-i-inject-br-tag-into-string-and-make-it-work-as-an-actual-html-tag
+
+    for (row in metadata) {
+
+        console.log(Object.values(metadata[row]));
+    };
+
+    //----------------------------------------------------------------------------
+    //----- Update Page -----
+    //----------------------------------------------------------------------------
+
+    //when new dropdown menu value is selected, run updatePage
+    d3.select("#selDataset").on("change", updatePage);
+    function updatePage() {
+        
+        updatePlotly();
+        updateMetadata();
+    };
+
+    //----------------------------------------------------------------------------
+    //----- Update Plots -----
+    //----------------------------------------------------------------------------
     
     //update Plotly with x, y of new dropdown menu value
     function updatePlotly() {
@@ -160,6 +193,26 @@ dataSamples.then(function(data) {
         Plotly.restyle("bubble", "x", [new_bubble_otu_ids]);
         Plotly.restyle("bubble", "y", [new_bubble_sample_values]);
     }
+
+    //----------------------------------------------------------------------------
+    //----- Update Metadata -----
+    //----------------------------------------------------------------------------
+
+    // let new_metadata_text = "";
+    // for (let i = 0; i < new_metadata_keys.length; i++) {
+
+    //     let new_key_value_text = `${new_metadata_keys[i]}: ${new_metadata_values[i]} <br>`;
+    //     new_metadata_text = new_metadata_text.concat(new_key_value_text);
+
+    // }
+    
+    // select_sample_metadata.html(new_metadata_text);
+
+    function updateMetadata() {
+        //let new_metadata_keys = Object.keys(metadata[]);
+        //let new_metadata_values = Object.values(metadata[]);
+    };
+
 });
 
 //FIX TEXT!!!
