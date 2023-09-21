@@ -5,7 +5,7 @@ const dataSamples = d3.json(url);
 dataSamples.then(function(data) {
     
     //----------------------------------------------------------------------------
-    //----- Data Prep -----
+    //----- Top 10 Data Prep -----
     //----------------------------------------------------------------------------
 
     //data contains names, metadata, samples
@@ -149,11 +149,6 @@ dataSamples.then(function(data) {
     select_sample_metadata.html(metadata_text);
     //////////https://stackoverflow.com/questions/70926924/can-i-inject-br-tag-into-string-and-make-it-work-as-an-actual-html-tag
 
-    for (row in metadata) {
-
-        console.log(Object.values(metadata[row]));
-    };
-
     //----------------------------------------------------------------------------
     //----- Update Page -----
     //----------------------------------------------------------------------------
@@ -192,26 +187,68 @@ dataSamples.then(function(data) {
 
         Plotly.restyle("bubble", "x", [new_bubble_otu_ids]);
         Plotly.restyle("bubble", "y", [new_bubble_sample_values]);
+        
+        var marker_update = {
+
+            size: new_bubble_sample_values,
+            color: new_bubble_otu_ids,
+            colorscale: 'Earth'
+            //////////https://plotly.com/javascript/colorscales/
+        };
+        Plotly.restyle("bubble", "marker", marker_update);
+        
     }
 
     //----------------------------------------------------------------------------
     //----- Update Metadata -----
     //----------------------------------------------------------------------------
 
-    // let new_metadata_text = "";
+    let metadata_dict = {};
+    for (row in metadata) {
+
+        let meta_id =  Object.values(metadata[row]).slice(0,1)[0];
+        let meta_vals =  Object.values(metadata[row]).slice(1,7);
+        metadata_dict[meta_id] = meta_vals;
+    };
+
     // for (let i = 0; i < new_metadata_keys.length; i++) {
 
     //     let new_key_value_text = `${new_metadata_keys[i]}: ${new_metadata_values[i]} <br>`;
     //     new_metadata_text = new_metadata_text.concat(new_key_value_text);
 
     // }
-    
+
+    // for (let i = 0; i < ) {
+
+    // }
+
     // select_sample_metadata.html(new_metadata_text);
 
     function updateMetadata() {
-        //let new_metadata_keys = Object.keys(metadata[]);
-        //let new_metadata_values = Object.values(metadata[]);
+        
+        let selected_id = d3.select("#selDataset").property("value");
+        let new_metadata = metadata_dict[selected_id];
+        let key_names = Object.keys(metadata[0]);
+
+        //console.log(key_names);
+        //console.log(key_names.length);
+        let new_metadata_text = `${key_names[0]}: ${selected_id} <br>`;
+        for (let i = 1; i < key_names.length; i++) {
+
+            let new_text = `${key_names[i]}: ${new_metadata[i]} <br>`;
+            new_metadata_text = new_metadata_text.concat(new_text);
+        }
+        
+        select_sample_metadata.html(new_metadata_text);
+
+
     };
+
+    // let metadata = data.metadata;
+    // let sample_metadata = metadata[0];
+
+    // let metadata_keys = Object.keys(sample_metadata);
+    // let metadata_values = Object.values(sample_metadata);
 
 });
 
